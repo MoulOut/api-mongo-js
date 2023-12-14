@@ -1,0 +1,18 @@
+{
+  "name": "api-mongo-js",
+  "version": "1.0.0",
+  "description": "Api de livraria utilizando node.js,express e mongoDB",
+  "main": "index.js",
+  "type": "module",
+  "author": "Matheus Moulin",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "dot-env": "^0.0.1",
+    "express": "^4.18.2",
+    "nodemon": "3.0.1"
+  }
+}
