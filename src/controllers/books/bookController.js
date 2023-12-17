@@ -5,6 +5,7 @@ class BookController {
   static async listBooks(req, res) {
     try {
       const listBooks = await book.find({});
+      // const listBooks = await book.find({}).populate('author').exec(); Reference
       res.status(200).json(listBooks);
     } catch (error) {
       res
@@ -29,7 +30,7 @@ class BookController {
     const newBook = req.body;
     try {
       const authorFound = await author.findById(newBook.author);
-      const completeBook = { ...req.body, author: { ...authorFound._doc } };
+      const completeBook = { ...req.body, author: { ...authorFound._doc } }; //Embedding
       await book.create(completeBook);
       res
         .status(201)
@@ -57,7 +58,8 @@ class BookController {
     const bookId = req.params.id;
     try {
       const authorFound = await author.findById(req.body.author);
-      const completeBook = { ...req.body, author: { ...authorFound._doc } };
+      const completeBook = { ...req.body, author: { ...authorFound._doc } }; //Embedding
+    //const newBook = req.body Reference 
       await book.findByIdAndUpdate(bookId, completeBook);
       res.status(200).json({ message: 'Book updated with success' });
     } catch (error) {
