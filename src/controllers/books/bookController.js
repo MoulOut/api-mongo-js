@@ -1,7 +1,7 @@
+import { author } from '../../models/Author.js';
 import book from '../../models/Book.js';
 
 class BookController {
-
   static async listBooks(req, res) {
     try {
       const listBooks = await book.find({});
@@ -13,21 +13,27 @@ class BookController {
     }
   }
 
-  static async bookById(req,res) {
+  static async bookById(req, res) {
     try {
-      const bookById = await book.findById(req.params.id);
+      const bookId = req.params.id;
+      const bookById = await book.findById(bookId);
       res.status(200).json(bookById);
     } catch (error) {
-      res.status(500).json({message: `${error.message} - Failed to find registry`})
+      res
+        .status(500)
+        .json({ message: `${error.message} - Failed to find registry` });
     }
   }
 
   static async bookRegistry(req, res) {
+    const newBook = req.body;
     try {
-      const newBook = await book.create(req.body);
+      const authorFound = await author.findById(newBook.author);
+      const completeBook = { ...req.body, author: { ...authorFound._doc } };
+      await book.create(completeBook);
       res
         .status(201)
-        .json({ message: 'Book created with sucess', book: newBook });
+        .json({ message: 'Book created with sucess', book: completeBook });
     } catch (error) {
       res.status(500).json({
         message: `${error.message} - Failed to create a new registry`,
@@ -37,7 +43,8 @@ class BookController {
 
   static async bookDelete(req, res) {
     try {
-      await book.findByIdAndDelete(req.params.id);
+      const bookId = req.params.id;
+      await book.findByIdAndDelete(bookId);
       res.status(204).send();
     } catch (error) {
       res
@@ -47,13 +54,28 @@ class BookController {
   }
 
   static async bookUpdate(req, res) {
+    const bookId = req.params.id;
     try {
-      await book.findByIdAndUpdate(req.params.id, req.body);
-      res.status(200).send();
+      const authorFound = await author.findById(req.body.author);
+      const completeBook = { ...req.body, author: { ...authorFound._doc } };
+      await book.findByIdAndUpdate(bookId, completeBook);
+      res.status(200).json({ message: 'Book updated with success' });
     } catch (error) {
       res
         .status(500)
         .json({ message: `${error.message} - Failed to update registry` });
+    }
+  }
+
+  static async listBooksByEditor(req, res) {
+    const editor = req.query.editor;
+    try {
+      const booksByEditor = await book.find({ editor: editor });
+      res.status(200).json(booksByEditor);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: `${error.message} - Failed to find books` });
     }
   }
 }
