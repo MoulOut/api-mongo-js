@@ -59,7 +59,7 @@ class BookController {
     try {
       const authorFound = await author.findById(req.body.author);
       const completeBook = { ...req.body, author: { ...authorFound._doc } }; //Embedding
-    //const newBook = req.body Reference 
+      //const newBook = req.body Reference
       await book.findByIdAndUpdate(bookId, completeBook);
       res.status(200).json({ message: 'Book updated with success' });
     } catch (error) {

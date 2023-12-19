@@ -6,11 +6,11 @@ const connection = await connectToDatabase();
 
 connection.on('error',(error) =>{
   console.error('Connection error:',error);
-})
+});
 
 connection.once('open',() =>{
-  console.log('connected with database successfully.')
-})
+  console.log('connected with database successfully.');
+});
 
 const app = express();
 routes(app);
