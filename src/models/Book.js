@@ -4,11 +4,17 @@ import { authorSchema } from './Author.js';
 const bookSchema = new mongoose.Schema(
   {
     id: { type: mongoose.Schema.Types.ObjectId },
-    title: { type: String, required: true },
-    editor: { type: String },
+    title: {
+      type: String,
+      required: [true, 'Field "title" is required.'],
+    },
+    editor: {
+      type: String,
+      required: [true, 'Field "editor" is required.'],
+    },
     price: { type: Number },
     pages: { type: Number },
-    author: authorSchema //embedding
+    author: authorSchema, //embedding
     // author: {type: mongoose.Schema.Types.ObjectId, ref: 'author', required: true} Reference
   },
   { versionKey: false }
