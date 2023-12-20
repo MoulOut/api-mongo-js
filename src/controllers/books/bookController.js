@@ -1,3 +1,4 @@
+import NotFound from '../../errors/notFound.js';
 import { author } from '../../models/Author.js';
 import book from '../../models/Book.js';
 
@@ -11,7 +12,7 @@ class BookController {
         return res.status(200).json(listBooks);
       }
 
-      return res.status(404).json({ message: 'No registries found' });
+      next(new NotFound('Registries not found.'));
     } catch (error) {
       next(error);
     }
@@ -26,7 +27,7 @@ class BookController {
         return res.status(200).json(bookById);
       }
 
-      return res.status(404).json({ message: 'ID not found' });
+      next(new NotFound('Book ID not found.'));
     } catch (error) {
       next(error);
     }
@@ -49,8 +50,11 @@ class BookController {
   static async bookDelete(req, res, next) {
     try {
       const bookId = req.params.id;
-      await book.findByIdAndDelete(bookId);
-      res.status(204).send();
+      const bookToDelete = await book.findByIdAndDelete(bookId);
+      if (bookToDelete) {
+        res.status(204).send();
+      }
+      next(new NotFound('Book ID not found'));
     } catch (error) {
       next(error);
     }
@@ -62,8 +66,11 @@ class BookController {
       const authorFound = await author.findById(req.body.author);
       const completeBook = { ...req.body, author: { ...authorFound._doc } }; //Embedding
       //const newBook = req.body Reference
-      await book.findByIdAndUpdate(bookId, completeBook);
-      res.status(200).json({ message: 'Book updated with success' });
+      const bookToUpdate = await book.findByIdAndUpdate(bookId, completeBook);
+      if (bookToUpdate) {
+        res.status(200).json({ message: 'Book updated with success' });
+      }
+      next(new NotFound('Book ID not found'));
     } catch (error) {
       next(error);
     }
@@ -73,7 +80,11 @@ class BookController {
     const editor = req.query.editor;
     try {
       const booksByEditor = await book.find({ editor: editor });
-      res.status(200).json(booksByEditor);
+      if (booksByEditor){
+        res.status(200).json(booksByEditor);
+      }
+
+      next(new NotFound('Editor not found'));
     } catch (error) {
       next(error);
     }
