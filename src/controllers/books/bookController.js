@@ -1,17 +1,30 @@
+import IncorretRequest from '../../errors/incorrectRequest.js';
 import NotFound from '../../errors/notFound.js';
 import models from '../../models/index.js';
 
 class BookController {
   static async listBooks(req, res, next) {
     try {
-      const listBooks = await models.book.find({});
-      // const listBooks = await book.find({}).populate('author').exec(); Reference
+      let { limit = 5, pages = 1 } = req.query;
 
-      if (listBooks) {
-        return res.status(200).json(listBooks);
+      limit = parseInt(limit);
+      pages = parseInt(pages);
+
+      if (limit > 0 && pages > 0) {
+        const listBooks = await models.book
+          .find({})
+          .sort({ _id: -1 })
+          .skip((pages - 1) * limit)
+          .limit(limit);
+        // const listBooks = await book.find({}).populate('author').exec(); Reference
+
+        if (listBooks) {
+          return res.status(200).json(listBooks);
+        }
+
+        next(new NotFound('Registries not found.'));
       }
-
-      next(new NotFound('Registries not found.'));
+      next(new IncorretRequest('Invalid Query Parameters'));
     } catch (error) {
       next(error);
     }
@@ -112,11 +125,9 @@ async function filter(params) {
       name: { $regex: authorName, $options: 'i' },
     });
 
-    if (author) {
-      filteredValue.author = author.map((author) => {
-        return author._doc;
-      });
-    }
+    filteredValue.author = author.map((author) => {
+      return author._doc;
+    });
   }
 
   return filteredValue;
