@@ -1,30 +1,15 @@
-import IncorretRequest from '../../errors/incorrectRequest.js';
 import NotFound from '../../errors/notFound.js';
+import book from '../../models/Book.js';
 import models from '../../models/index.js';
 
 class BookController {
   static async listBooks(req, res, next) {
     try {
-      let { limit = 5, pages = 1 } = req.query;
+      const findBooks = book.find();
 
-      limit = parseInt(limit);
-      pages = parseInt(pages);
+      req.booksList = findBooks;
 
-      if (limit > 0 && pages > 0) {
-        const listBooks = await models.book
-          .find({})
-          .sort({ _id: -1 })
-          .skip((pages - 1) * limit)
-          .limit(limit);
-        // const listBooks = await book.find({}).populate('author').exec(); Reference
-
-        if (listBooks) {
-          return res.status(200).json(listBooks);
-        }
-
-        next(new NotFound('Registries not found.'));
-      }
-      next(new IncorretRequest('Invalid Query Parameters'));
+      next();
     } catch (error) {
       next(error);
     }
@@ -95,13 +80,13 @@ class BookController {
     try {
       const filteredValue = await filter(req.query);
 
-      const booksByEditor = await models.book.find(filteredValue);
-
-      if (booksByEditor) {
-        return res.status(200).json(booksByEditor);
+      if (filteredValue) {
+        const booksByFilter = models.book.find(filteredValue);
+        req.booksList = booksByFilter;
+        next();
+      }else{
+        next(new NotFound('Query not found'));
       }
-      console.log(booksByEditor);
-      next(new NotFound('Query not found'));
     } catch (error) {
       next(error);
     }
