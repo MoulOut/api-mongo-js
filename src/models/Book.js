@@ -27,7 +27,7 @@ const bookSchema = new mongoose.Schema(
         validator: (value) => {
           return value >= 10 && value <= 5000;
         },
-        message: 'Pages must range from 10 to 5000. Value sent: {VALUE}'
+        message: 'Pages must range from 10 to 5000. Value informed: {VALUE}'
       },
     },
     author: {
