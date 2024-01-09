@@ -4,9 +4,11 @@ import models from '../../models/index.js';
 class AuthorController {
   static async listAuthors(req, res, next) {
     try {
-      const listAuthors = await models.author.find({});
+      const listAuthors = models.author.find({});
+
+      req.searchResult = listAuthors;
       if (listAuthors) {
-        res.status(200).json(listAuthors);
+        return next();
       }
       next(new NotFound('Registries not found.'));
     } catch (error) {

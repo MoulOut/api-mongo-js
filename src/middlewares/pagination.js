@@ -10,10 +10,10 @@ async function pagination(req, res, next) {
     pages = parseInt(pages);
     order = parseInt(order);
 
-    const booksList = req.booksList;
+    const searchResult = req.searchResult;
 
     if (limit > 0 && pages > 0) {
-      const paginatedList = await booksList
+      const paginatedList = await searchResult
         .find({})
         .sort({ [orderCamp]: order })
         .skip((pages - 1) * limit)

@@ -7,7 +7,7 @@ class BookController {
     try {
       const findBooks = book.find();
 
-      req.booksList = findBooks;
+      req.searchResult = findBooks;
 
       next();
     } catch (error) {
@@ -82,7 +82,7 @@ class BookController {
 
       if (filteredValue) {
         const booksByFilter = models.book.find(filteredValue);
-        req.booksList = booksByFilter;
+        req.searchResult = booksByFilter;
         next();
       }else{
         next(new NotFound('Query not found'));
